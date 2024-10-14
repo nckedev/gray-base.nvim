@@ -136,49 +136,6 @@ local function generate_colors(opts)
 	}
 end
 
--- local s = 30
--- local l = 60
--- local hue = {
--- 	primary = 42,
--- 	secondary = 210,
---
--- 	orange = 42,
--- 	blue = 210,
--- 	purple = 232,
--- 	green = 85,
--- 	red = 0,
--- 	yellow = 50,
--- }
---
--- local colors = {
--- 	grays = {
--- 		min = gray(0),
--- 		max = gray(100),
--- 		hidden = gray(26),
---
--- 		base1 = gray(12),
--- 		base2 = gray(15),
--- 		base3 = gray(27),
--- 		base4 = gray(38),
---
--- 		mid_bg = gray(45),
--- 		mid = gray(55),
--- 		mid_fg = gray(55),
---
--- 		norm1 = gray(65),
--- 		norm2 = gray(70),
--- 		norm3 = gray(80),
--- 		norm4 = gray(85),
--- 	},
---
--- 	primary = generate_variants(hue.primary, s, l),
--- 	secondary = generate_variants(hue.secondary, s, l),
--- 	purple = generate_variants(hue.purple, s, l),
--- 	red = generate_variants(hue.red, s, l),
--- 	green = generate_variants(hue.green, s, l),
--- 	orange = generate_variants(hue.orange, s, l),
--- 	yellow = generate_variants(hue.yellow, s, l),
--- }
 local function generate_palette(opts)
 	local colors = generate_colors(opts)
 
@@ -220,75 +177,6 @@ local function generate_palette(opts)
 		ok = colors.norm_subtle,
 	}
 end
-
--- local palette
---
--- if vim.o.background == "dark" then
--- 	palette = {
--- 		base1 = colors.grays.base1,
--- 		base2 = colors.grays.base2,
--- 		base3 = colors.grays.base3,
--- 		base4 = colors.grays.base4,
---
--- 		hidden = colors.grays.hidden,
--- 		mid = colors.grays.mid,
---
--- 		norm1 = colors.grays.norm1,
--- 		norm2 = colors.grays.norm2,
--- 		norm3 = colors.grays.norm3,
--- 		norm4 = colors.grays.norm4,
---
--- 		accent = colors.primary.dark,
---
--- 		fn = colors.primary.default,
---
--- 		cursor_line = colors.grays.base2,
--- 		comment = colors.grays.hidden,
--- 		oob = colors.grays.min,
--- 		cursor = colors.green.dark,
---
--- 		visual = colors.grays.norm1,
--- 		literal = colors.grays.mid_bg,
--- 		number = colors.secondary.default,
---
--- 		add = colors.green.default,
--- 		change = colors.orange.default,
--- 		delete = colors.red.default,
---
--- 		error = colors.red.default,
--- 		warn = colors.orange.default,
--- 		hint = colors.grays.norm1,
--- 		info = colors.grays.norm1,
--- 		ok = colors.norm_subtle,
--- 	}
--- else
--- 	-- TODO: light mode
--- 	palette = {
--- 		bg = colors.grays["750"],
--- 		bg_subtle = colors.grays["600"],
--- 		bg_very_subtle = colors.grays["700"],
--- 		norm = colors.grays["050"],
--- 		norm_subtle = colors.grays["100"],
--- 		norm_very_subtle = colors.grays["200"],
--- 		cursor_line = colors.grays["800"],
--- 		comment = colors.grays["450"],
--- 		oob = colors.grays["900"],
---
--- 		visual = colors.orange,
--- 		literal = colors.green_dark,
--- 		number = colors.purple_dark,
---
--- 		add = colors.green_pastel,
--- 		change = colors.orange_pastel,
--- 		delete = colors.purple_pastel,
---
--- 		error = colors.purple_dark,
--- 		warn = colors.orange_dark,
--- 		hint = colors.green_dark,
--- 		info = colors.grays["050"],
--- 		ok = colors.norm_subtle,
--- 	}
--- end
 
 local function generate_hlgroups(opts)
 	local palette = generate_palette(opts)
