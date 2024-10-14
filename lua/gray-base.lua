@@ -13,6 +13,8 @@ local config = {
 			-- staturation of every color
 			saturation = 30,
 		},
+		grays = {},
+		cursor = {},
 	},
 	light = {
 		tint = {
@@ -32,6 +34,14 @@ local config = {
 	-- how much the light and dark variant of a color shoud variy
 	-- this variance i rary used
 	luminance_variance = 10,
+	-- override the semantic hightlights from the lsp
+	override_lsp_semantics = true,
+	-- the priority to set when 'override_lsp_semantics' is set to true
+	lsp_semantics_prio = 95,
+
+	monochrome_gutter_diagnostics = false,
+	monochrome_lualine_diagnostics = false,
+	monochrime_lualine_gitdiff = false,
 }
 
 local M = {}
