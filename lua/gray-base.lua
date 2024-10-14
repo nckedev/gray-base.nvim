@@ -10,7 +10,7 @@ local config = {
 		secondary = 210,
 		-- staturation of every color
 		saturation = 30,
-		luminance = 60,
+		lightness = 60,
 	},
 	grays = {},
 	cursor = {},
@@ -19,13 +19,13 @@ local config = {
 	-- a hue value will respect the sarutation and luminance set in "colors"
 	-- while a hex string will not, so use a hex value if you want an absolute value that
 	-- the rest of the config dont have any impact over
-	overrides = {
+	hl_overrides = {
 		["@variable"] = 23, -- works with a hue value, 0 - 360
 		["@varialbe.rust"] = "#FFF000", -- works with a #hex value
 	},
 	-- how much the light and dark variant of a color shoud variy
 	-- this variance i rary used
-	luminance_variance = 10,
+	lightness_variance = 10,
 	-- override the semantic hightlights from the lsp
 	override_lsp_semantics = true,
 	-- the priority to set when 'override_lsp_semantics' is set to true
@@ -91,7 +91,6 @@ M.setup = function(args)
 end
 
 M.load = function()
-	vim.print(M.config)
 	require("gray-base.theme").load(M.config)
 end
 

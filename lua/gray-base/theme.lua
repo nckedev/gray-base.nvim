@@ -85,8 +85,8 @@ local function gray(x, opts)
 end
 
 local function generate_variants(h, opts)
-	local l = 60
-	local variance = opts.luminance_variance
+	local l = opts.colors.lightness
+	local variance = opts.lightness_variance
 	local s = opts.colors.saturation
 
 	return {
@@ -501,7 +501,7 @@ M.load = function(opts)
 	if is_dark() == true and opts ~= nil then
 		opts = vim.tbl_deep_extend("force", opts, opts.dark or {})
 	else
-		opts = vim.tbl_deep_extend("force", opts, opts.ligth or {})
+		opts = vim.tbl_deep_extend("force", opts, opts.light or {})
 	end
 
 	local hlgroups = generate_hlgroups(opts)
