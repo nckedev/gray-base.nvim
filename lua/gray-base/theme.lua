@@ -1,3 +1,5 @@
+require("gray-base.hsl")
+
 vim.highlight.priorities.semantic_tokens = 95
 
 vim.cmd.highlight("clear")
@@ -167,14 +169,14 @@ local function generate_palette(opts)
 		number = colors.secondary.default,
 
 		add = colors.green.default,
-		change = colors.orange.default,
+		change = colors.yellow.default,
 		delete = colors.red.default,
 
 		error = colors.red.default,
-		warn = colors.orange.default,
+		warn = colors.yellow.default,
 		hint = colors.grays.norm1,
 		info = colors.grays.norm1,
-		ok = colors.norm_subtle,
+		ok = colors.grays.norm1,
 	}
 end
 
@@ -421,9 +423,10 @@ local function generate_hlgroups(opts)
 
 		-- TODO: testing
 		-- NOTE: asd
-		-- HACK:
-		-- FIX: asdf
-		-- PERF: asdf
+		-- HACK: hack
+		-- FIX: fix
+		-- PERF: perf
+		-- BUG: bug
 
 		-- Todo comment
 		TodoBgNOTE = { bg = palette.number, fg = palette.base1 },
@@ -494,17 +497,14 @@ vim.api.nvim_create_autocmd("TermOpen", {
 local M = {}
 
 M.load = function(opts)
-	if is_dark() == true then
-		o = opts.dark
+	-- override the base options with dark or light if there is any
+	if is_dark() == true and opts ~= nil then
+		opts = vim.tbl_deep_extend("force", opts, opts.dark or {})
 	else
-		o = opts.light
+		opts = vim.tbl_deep_extend("force", opts, opts.ligth or {})
 	end
 
-	o.luminance_variance = opts.luminance_variance
-
-	print(vim.inspect(o))
-
-	local hlgroups = generate_hlgroups(o)
+	local hlgroups = generate_hlgroups(opts)
 	for group, hl in pairs(hlgroups) do
 		vim.api.nvim_set_hl(0, group, hl)
 	end
