@@ -13,7 +13,6 @@ local config = {
 			-- hue of the secondary color, used for constants and numbers
 			secondary = {
 				hue = 210,
-				saturation = 0,
 				lightness = 50,
 			},
 			-- hue of strings, only works if use_colored_strings is set to true.

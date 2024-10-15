@@ -19,7 +19,6 @@ local function is_dark()
 end
 
 local function clamp(x, max)
-	print(x)
 	if x > max then
 		return 100
 	elseif x < 0 then
@@ -584,8 +583,13 @@ local function convert_to_object(x, opts)
 			lightness = opts.colors.lightness,
 		}
 	elseif type(x) == "table" then
-		-- TODO: handle the cases when the object does not have all properties, hue is required
 		assert(x.hue ~= nil, "the hue field is required")
+
+		if x.saturation == nil then
+			x.saturation = opts.colors.saturation
+		elseif x.lightness == nil then
+			x.lightness = opts.colors.lightness
+		end
 		return x
 	end
 end

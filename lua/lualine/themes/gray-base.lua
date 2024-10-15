@@ -1,5 +1,5 @@
 -- local C = require("")
-
+print("lua line")
 local theme = {
 	normal = {
 		a = { bg = "#000000", fg = "#FFFFFF", bold = true },
