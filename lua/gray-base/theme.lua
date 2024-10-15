@@ -19,6 +19,7 @@ local function is_dark()
 end
 
 local function clamp(x, max)
+	print(x)
 	if x > max then
 		return 100
 	elseif x < 0 then
@@ -75,21 +76,22 @@ local function hsl(h, s, l)
 	return res
 end
 
-local function gray(x, opts)
+local function gray(h, s, x)
 	--if lightmode, invert the gray colors
 	if is_dark() == false then
 		x = 100 - x
 	end
 
-	return hsl(opts.tint.hue, opts.tint.saturation, x)
+	return hsl(h, s, x)
 end
 
-local function generate_variants(h, opts)
-	local l = opts.colors.lightness
-	local variance = opts.lightness_variance
-	local s = opts.colors.saturation
+local function generate_variants(color, variance)
+	local h = color.hue
+	local s = color.saturation
+	local l = color.lightness
 
 	return {
+		monochrome = hsl(h, 0, l),
 		default = hsl(h, s, l),
 		dark = hsl(h, s, l - variance),
 		light = hsl(h, s, l + variance),
@@ -97,49 +99,127 @@ local function generate_variants(h, opts)
 	}
 end
 
+local function round(x)
+	if x >= 0.5 then
+		return math.ceil(x)
+	else
+		return math.floor(x)
+	end
+end
+
+-- TODO: remove min max, and take fom opts
+local function generate_gray_scale(min, max, opts)
+	-- 5 base grays and 5 highlight grays and 3 mid grays
+	-- the step between base5 and mid1 should be twice the steps between each base step
+	-- ex min = 10 max = 90
+	-- base1
+	assert(max > min, "max need to be bigger than min")
+
+	-- 14 steps is need for 15 numbers
+	local step = (max - min) / 14
+	assert(step > 0, "not enough difference between min and max to make 15 different shades")
+
+	local x = min
+	local scale = {}
+	for i = 1, 15 do
+		scale[i] = round(x)
+		x = x + step
+	end
+
+	local h = opts.tint.hue
+	local s = opts.tint.saturation
+
+	return {
+		min = gray(h, s, 0),
+		max = gray(h, s, 100),
+
+		bg1 = gray(h, s, scale[1]),
+		bg2 = gray(h, s, scale[2]),
+		bg3 = gray(h, s, scale[3]),
+		bg4 = gray(h, s, scale[4]),
+		bg5 = gray(h, s, scale[5]),
+
+		mid_bg = gray(h, s, scale[7]),
+		mid = gray(h, s, scale[8]),
+		mid_fg = gray(h, s, scale[9]),
+
+		fg1 = gray(h, s, scale[11]),
+		fg2 = gray(h, s, scale[12]),
+		fg3 = gray(h, s, scale[13]),
+		fg4 = gray(h, s, scale[14]),
+		fg5 = gray(h, s, scale[15]),
+	}
+end
+
+local function hsl_obj_from_hue(x, opts)
+	return {
+		hue = x,
+		saturation = opts.colors.saturation,
+		lightness = opts.colors.lightness,
+	}
+end
+
 local function generate_colors(opts)
 	local colors = {
-		orange = 42,
-		blue = 210,
-		purple = 232,
-		green = 85,
-		red = 0,
-		yellow = 50,
+		red = hsl_obj_from_hue(0, opts),
+		orange = hsl_obj_from_hue(42, opts),
+		yellow = hsl_obj_from_hue(50, opts),
+		green = hsl_obj_from_hue(85, opts),
+		blue = hsl_obj_from_hue(210, opts),
+		purple = hsl_obj_from_hue(232, opts),
+		red_pure = hsl_obj_from_hue(0, opts),
+		orange_pure = hsl_obj_from_hue(30, opts),
+		yellow_pure = hsl_obj_from_hue(60, opts),
+		green_pure = hsl_obj_from_hue(120, opts),
+		blue_pure = hsl_obj_from_hue(240, opts),
 	}
+
+	generate_gray_scale(20, 90, opts)
+
+	local h = opts.tint.hue
+	local s = opts.tint.saturation
 	return {
 
 		grays = {
-			min = gray(0, opts),
-			max = gray(100, opts),
-			hidden = gray(26, opts),
+			min = gray(h, s, 0),
+			max = gray(h, s, 100),
+			hidden = gray(h, s, 26),
 
-			base1 = gray(12, opts),
-			base2 = gray(15, opts),
-			base3 = gray(27, opts),
-			base4 = gray(38, opts),
+			base1 = gray(h, s, 12),
+			base2 = gray(h, s, 15),
+			base3 = gray(h, s, 27),
+			base4 = gray(h, s, 38),
 
-			mid_bg = gray(45, opts),
-			mid = gray(55, opts),
-			mid_fg = gray(55, opts),
+			mid_bg = gray(h, s, 45),
+			mid = gray(h, s, 55),
+			mid_fg = gray(h, s, 55),
 
-			norm1 = gray(65, opts),
-			norm2 = gray(70, opts),
-			norm3 = gray(80, opts),
-			norm4 = gray(85, opts),
+			norm1 = gray(h, s, 65),
+			norm2 = gray(h, s, 70),
+			norm3 = gray(h, s, 80),
+			norm4 = gray(h, s, 85),
 		},
 
-		primary = generate_variants(opts.colors.primary, opts),
-		secondary = generate_variants(opts.colors.secondary, opts),
-		purple = generate_variants(colors.purple, opts),
-		red = generate_variants(colors.red, opts),
-		green = generate_variants(colors.green, opts),
-		orange = generate_variants(colors.orange, opts),
-		yellow = generate_variants(colors.yellow, opts),
+		primary = generate_variants(opts.colors.primary, opts.lightness_variance),
+		secondary = generate_variants(opts.colors.secondary, opts.lightness_variance),
+		strings = generate_variants(opts.colors.strings, opts.lightness_variance),
+		purple = generate_variants(colors.purple, opts.lightness_variance),
+		red = generate_variants(colors.red, opts.lightness_variance),
+		green = generate_variants(colors.green, opts.lightness_variance),
+		orange = generate_variants(colors.orange, opts.lightness_variance),
+		yellow = generate_variants(colors.yellow, opts.lightness_variance),
 	}
 end
 
 local function generate_palette(opts)
 	local colors = generate_colors(opts)
+
+	local str_color
+	if opts.use_colored_strings then
+		str_color = colors.strings.default
+	else
+		str_color = colors.grays.mid_bg
+	end
 
 	return {
 		base1 = colors.grays.base1,
@@ -165,7 +245,7 @@ local function generate_palette(opts)
 		cursor = colors.green.dark,
 
 		visual = colors.grays.norm1,
-		literal = colors.grays.mid_bg,
+		literal = str_color,
 		number = colors.secondary.default,
 
 		add = colors.green.default,
@@ -496,6 +576,20 @@ vim.api.nvim_create_autocmd("TermOpen", {
 -- Here's the function you want --
 local M = {}
 
+local function convert_to_object(x, opts)
+	if type(x) == "number" then
+		return {
+			hue = x,
+			saturation = opts.colors.saturation,
+			lightness = opts.colors.lightness,
+		}
+	elseif type(x) == "table" then
+		-- TODO: handle the cases when the object does not have all properties, hue is required
+		assert(x.hue ~= nil, "the hue field is required")
+		return x
+	end
+end
+
 M.load = function(opts)
 	-- override the base options with dark or light if there is any
 	if is_dark() == true and opts ~= nil then
@@ -503,6 +597,10 @@ M.load = function(opts)
 	else
 		opts = vim.tbl_deep_extend("force", opts, opts.light or {})
 	end
+
+	opts.colors.primary = convert_to_object(opts.colors.primary, opts)
+	opts.colors.secondary = convert_to_object(opts.colors.secondary, opts)
+	opts.colors.strings = convert_to_object(opts.colors.strings, opts)
 
 	local hlgroups = generate_hlgroups(opts)
 	for group, hl in pairs(hlgroups) do
