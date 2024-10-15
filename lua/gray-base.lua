@@ -17,6 +17,7 @@ local config = {
 			},
 			-- hue of strings, only works if use_colored_strings is set to true.
 			strings = 80,
+			cursor = { hue = 85, saturation = 40, lightness = 50 },
 			-- staturation of every color
 			saturation = 30,
 			lightness = 60,
@@ -29,15 +30,14 @@ local config = {
 			min = 15,
 			max = 85,
 		},
-		cursor = {},
 		-- override capture or highligt groups
 		-- accepts a hue value or a hex string
 		-- a hue value will respect the sarutation and luminance set in "colors"
 		-- while a hex string will not, so use a hex value if you want an absolute value that
 		-- the rest of the config dont have any impact over
 		hl_overrides = {
-			["@variable"] = 23, -- works with a hue value, 0 - 360
-			["@varialbe.rust"] = "#FFF000", -- works with a #hex value
+			-- ["@variable"] = 23, -- works with a hue value, 0 - 360
+			-- ["@varialbe.rust"] = "#FFF000", -- works with a #hex value
 		},
 		-- how much the light and dark variant of a color shoud variy
 		-- this variance i rary used
@@ -50,7 +50,6 @@ local config = {
 		gutter_diagnostics_saturation = 40,
 		gutter_gitsigns_saturation = 40,
 		lualine_saturation = 40,
-		use_colored_strings = false,
 
 		preset = "default",
 

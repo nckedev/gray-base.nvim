@@ -202,6 +202,7 @@ local function generate_colors(opts)
 		primary = generate_variants(opts.colors.primary, opts.lightness_variance),
 		secondary = generate_variants(opts.colors.secondary, opts.lightness_variance),
 		strings = generate_variants(opts.colors.strings, opts.lightness_variance),
+		cursor = generate_variants(opts.colors.cursor, opts.lightness_variance),
 		purple = generate_variants(colors.purple, opts.lightness_variance),
 		red = generate_variants(colors.red, opts.lightness_variance),
 		green = generate_variants(colors.green, opts.lightness_variance),
@@ -212,13 +213,6 @@ end
 
 local function generate_palette(opts)
 	local colors = generate_colors(opts)
-
-	local str_color
-	if opts.use_colored_strings then
-		str_color = colors.strings.default
-	else
-		str_color = colors.grays.mid_bg
-	end
 
 	return {
 		base1 = colors.grays.base1,
@@ -241,10 +235,10 @@ local function generate_palette(opts)
 		cursor_line = colors.grays.base2,
 		comment = colors.grays.hidden,
 		oob = colors.grays.min,
-		cursor = colors.green.dark,
+		cursor = colors.cursor.default,
 
 		visual = colors.grays.norm1,
-		literal = str_color,
+		literal = colors.strings.default,
 		number = colors.secondary.default,
 
 		add = colors.green.default,
@@ -605,6 +599,7 @@ M.load = function(opts)
 	opts.colors.primary = convert_to_object(opts.colors.primary, opts)
 	opts.colors.secondary = convert_to_object(opts.colors.secondary, opts)
 	opts.colors.strings = convert_to_object(opts.colors.strings, opts)
+	opts.colors.cursor = convert_to_object(opts.colors.cursor, opts)
 
 	local hlgroups = generate_hlgroups(opts)
 	for group, hl in pairs(hlgroups) do
