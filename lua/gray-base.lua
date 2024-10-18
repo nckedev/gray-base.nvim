@@ -10,13 +10,10 @@ local config = {
 			-- the value can be a number (hue) or an object {hue, saturation, lightness }
 			-- if the value is a nunber the saturation and lightness of the color object is used.
 			primary = 42,
+			secondary = 210,
 			-- hue of the secondary color, used for constants and numbers
-			secondary = {
-				hue = 210,
-				lightness = 50,
-			},
 			-- hue of strings, only works if use_colored_strings is set to true.
-			strings = 80,
+			strings = { hue = 85, saturation = 0, lightness = 60 },
 			cursor = { hue = 85, saturation = 40, lightness = 50 },
 			-- staturation of every color
 			saturation = 30,
@@ -43,9 +40,8 @@ local config = {
 		-- this variance i rary used
 		lightness_variance = 10,
 		-- override the semantic hightlights from the lsp
-		override_lsp_semantics = true,
+		disable_lsp_semantic_hl = { "cs" },
 		-- the priority to set when 'override_lsp_semantics' is set to true
-		lsp_semantics_prio = 95,
 
 		gutter_diagnostics_saturation = 40,
 		gutter_gitsigns_saturation = 40,
@@ -58,7 +54,12 @@ local config = {
 		dark = {},
 		-- overrides for lightmode, all the base options except preset can be overridden
 		-- a value overriden in light will always have precidence over the base when bg="light"
-		light = {},
+		light = {
+			secondary = {
+				hue = 210,
+				lightness = 50,
+			},
+		},
 	},
 
 	["config_blue"] = {

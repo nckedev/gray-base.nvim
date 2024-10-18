@@ -1,6 +1,6 @@
 require("gray-base.hsl")
 
-vim.highlight.priorities.semantic_tokens = 95
+-- vim.highlight.priorities.semantic_tokens = 95
 
 vim.cmd.highlight("clear")
 if vim.fn.exists("syntax_on") then
@@ -107,18 +107,18 @@ local function round(x)
 end
 
 -- TODO: remove min max, and take fom opts
-local function generate_gray_scale(min, max, opts)
+local function generate_gray_scale(opts)
 	-- 5 base grays and 5 highlight grays and 3 mid grays
 	-- the step between base5 and mid1 should be twice the steps between each base step
 	-- ex min = 10 max = 90
 	-- base1
-	assert(max > min, "max need to be bigger than min")
+	assert(opts.grays.max > opts.grays.min, "max need to be bigger than min")
 
 	-- 14 steps is need for 15 numbers
-	local step = (max - min) / 14
+	local step = (opts.grays.max - opts.grays.min) / 14
 	assert(step > 0, "not enough difference between min and max to make 15 different shades")
 
-	local x = min
+	local x = opts.grays.min
 	local scale = {}
 	for i = 1, 15 do
 		scale[i] = round(x)
@@ -131,22 +131,26 @@ local function generate_gray_scale(min, max, opts)
 	return {
 		min = gray(h, s, 0),
 		max = gray(h, s, 100),
+		always_dark = hsl(h, s, opts.grays.min),
+		always_light = hsl(h, s, opts.grays.max),
 
 		bg1 = gray(h, s, scale[1]),
 		bg2 = gray(h, s, scale[2]),
 		bg3 = gray(h, s, scale[3]),
 		bg4 = gray(h, s, scale[4]),
 		bg5 = gray(h, s, scale[5]),
+		bg6 = gray(h, s, scale[6]),
+		bg7 = gray(h, s, scale[7]),
 
-		mid_bg = gray(h, s, scale[7]),
 		mid = gray(h, s, scale[8]),
-		mid_fg = gray(h, s, scale[9]),
 
-		fg1 = gray(h, s, scale[11]),
-		fg2 = gray(h, s, scale[12]),
+		fg7 = gray(h, s, scale[9]),
+		fg6 = gray(h, s, scale[10]),
+		fg5 = gray(h, s, scale[11]),
+		fg4 = gray(h, s, scale[12]),
 		fg3 = gray(h, s, scale[13]),
-		fg4 = gray(h, s, scale[14]),
-		fg5 = gray(h, s, scale[15]),
+		fg2 = gray(h, s, scale[14]),
+		fg1 = gray(h, s, scale[15]),
 	}
 end
 
@@ -173,31 +177,13 @@ local function generate_colors(opts)
 		blue_pure = hsl_obj_from_hue(240, opts),
 	}
 
-	generate_gray_scale(20, 90, opts)
+	local grays = generate_gray_scale(opts)
 
 	local h = opts.tint.hue
 	local s = opts.tint.saturation
 	return {
 
-		grays = {
-			min = gray(h, s, 0),
-			max = gray(h, s, 100),
-			hidden = gray(h, s, 26),
-
-			base1 = gray(h, s, 12),
-			base2 = gray(h, s, 15),
-			base3 = gray(h, s, 27),
-			base4 = gray(h, s, 38),
-
-			mid_bg = gray(h, s, 45),
-			mid = gray(h, s, 55),
-			mid_fg = gray(h, s, 55),
-
-			norm1 = gray(h, s, 65),
-			norm2 = gray(h, s, 70),
-			norm3 = gray(h, s, 80),
-			norm4 = gray(h, s, 85),
-		},
+		grays = grays,
 
 		primary = generate_variants(opts.colors.primary, opts.lightness_variance),
 		secondary = generate_variants(opts.colors.secondary, opts.lightness_variance),
@@ -208,6 +194,9 @@ local function generate_colors(opts)
 		green = generate_variants(colors.green, opts.lightness_variance),
 		orange = generate_variants(colors.orange, opts.lightness_variance),
 		yellow = generate_variants(colors.yellow, opts.lightness_variance),
+
+		-- used as indicator of unused hlgroups or as a testing for finding hlgroups
+		hl_error = hsl(0, 100, 50),
 	}
 end
 
@@ -215,29 +204,39 @@ local function generate_palette(opts)
 	local colors = generate_colors(opts)
 
 	return {
-		base1 = colors.grays.base1,
-		base2 = colors.grays.base2,
-		base3 = colors.grays.base3,
-		base4 = colors.grays.base4,
+		bg1 = colors.grays.bg1,
+		bg2 = colors.grays.bg2,
+		bg3 = colors.grays.bg3,
+		bg4 = colors.grays.bg4,
+		bg5 = colors.grays.bg5,
+		bg6 = colors.grays.bg6,
+		bg7 = colors.grays.bg7,
 
-		hidden = colors.grays.hidden,
 		mid = colors.grays.mid,
 
-		norm1 = colors.grays.norm1,
-		norm2 = colors.grays.norm2,
-		norm3 = colors.grays.norm3,
-		norm4 = colors.grays.norm4,
+		fg7 = colors.grays.fg7,
+		fg6 = colors.grays.fg6,
+		fg5 = colors.grays.fg5,
+		fg4 = colors.grays.fg4,
+		fg3 = colors.grays.fg3,
+		fg2 = colors.grays.fg2,
+		fg1 = colors.grays.fg1,
 
 		accent = colors.primary.dark,
+		accent_light = colors.primary.light,
 
 		fn = colors.primary.default,
+		keyword = colors.primary.light,
 
-		cursor_line = colors.grays.base2,
-		comment = colors.grays.hidden,
+		dark = colors.grays.always_dark,
+		light = colors.grays.always_light,
+
+		cursor_line = colors.grays.bg2,
+		comment = colors.grays.bg4,
 		oob = colors.grays.min,
 		cursor = colors.cursor.default,
 
-		visual = colors.grays.norm1,
+		visual = colors.grays.bg3,
 		literal = colors.strings.default,
 		number = colors.secondary.default,
 
@@ -247,8 +246,8 @@ local function generate_palette(opts)
 
 		error = colors.red.default,
 		warn = colors.yellow.default,
-		hint = colors.grays.norm1,
-		info = colors.grays.norm1,
+		hint = colors.grays.fg4,
+		info = colors.grays.fg4,
 		ok = colors.grays.norm1,
 	}
 end
@@ -257,13 +256,13 @@ local function generate_hlgroups(opts)
 	local palette = generate_palette(opts)
 	return {
 		-- normal {{{
-		Normal = { fg = palette.norm1, bg = palette.base1 },
-		NormalFloat = { fg = palette.norm1, bg = palette.base3 },
+		Normal = { fg = palette.fg3, bg = palette.bg1 },
+		NormalFloat = { fg = palette.fg3, bg = palette.bg3 },
 		NormalBorder = { link = "NormalFloat" },
 
-		Comment = { fg = palette.hidden, italic = true },
+		Comment = { fg = palette.comment, italic = true },
 		SpecialComment = { link = "Comment" },
-		Critical = { fg = palette.bg, bg = palette.accent, bold = true },
+		Critical = { fg = palette.fg1, bg = palette.accent, bold = true },
 		--}}}
 		-- constant literals {{{
 		Number = { fg = palette.number, bold = false },
@@ -277,9 +276,9 @@ local function generate_hlgroups(opts)
 		--}}}
 		-- syntax {{{
 		Function = { fg = palette.fn, bold = false },
-		Identifier = { fg = palette.norm1 },
+		Identifier = { fg = palette.fg5 },
 
-		Statement = { fg = palette.norm2, bold = false },
+		Statement = { fg = palette.fg3, bold = false },
 		Conditonal = { link = "Statement" },
 		Repeat = { link = "Statement" },
 		Label = { link = "Statement" },
@@ -292,7 +291,7 @@ local function generate_hlgroups(opts)
 		Macro = { link = "PreProc" },
 		PreCondit = { link = "PreProc" },
 
-		Type = { fg = palette.norm3, underline = false },
+		Type = { fg = palette.fg2, underline = false },
 		StorageClass = { link = "Type" },
 		Structure = { link = "Type" },
 		Typedef = { link = "Type" },
@@ -300,18 +299,18 @@ local function generate_hlgroups(opts)
 		Operator = { fg = palette.mid },
 		Debug = { link = "Operator" },
 
-		Special = { fg = palette.norm1, italic = true },
+		Special = { fg = palette.fg5, italic = true },
 		SpecialChar = { link = "Special" },
 		Tag = { link = "Special" },
 		Delimiter = { link = "Special" },
 
 		Underlined = { underline = true },
-		Ignore = { fg = palette.norm_very_subtle },
+		Ignore = { fg = palette.fg5 },
 		Error = { reverse = true, bold = true },
 		Todo = { fg = palette.accent, italic = true },
 		--}}}
 		-- spell {{{
-		SpellBad = { undercurl = true, sp = palette.norm1 },
+		SpellBad = { undercurl = true, sp = palette.fg5 },
 		SpellCap = { link = "SpellBad" },
 		SpellLocal = { link = "SpellBad" },
 		SpellRare = { link = "SpellBad" },
@@ -319,25 +318,25 @@ local function generate_hlgroups(opts)
 		-- ui {{{
 		ColorColumn = { link = "CursorLine" },
 		Conceal = { link = "Comment" },
-		CurSearch = { bg = palette.norm2, fg = palette.base2 },
-		Cursor = { fg = palette.oog, bg = palette.cursor },
+		CurSearch = { bg = palette.accent_light, fg = palette.dark },
+		Cursor = { fg = palette.dark, bg = palette.cursor },
 		CursorColumn = { link = "CursorLine" },
 		CursorLine = { bg = palette.cursor_line },
-		CursorLineNr = { fg = palette.base3, bg = palette.cursor_line, bold = false },
+		CursorLineNr = { fg = palette.bg4, bg = palette.cursor_line, bold = false },
 		EndOfBuffer = { link = "Normal" },
 		ErrorMsg = { fg = palette.accent, bold = true },
-		FloatBorder = { fg = palette.base2, bg = palette.base2 },
+		FloatBorder = { fg = palette.bg3, bg = palette.bg3 },
 		FloatTitle = {
-			fg = palette.norm_subtle,
-			bg = palette.base2,
+			fg = palette.mid,
+			bg = palette.bg3,
 			bold = true,
 			underline = true,
 		},
 		FoldColumn = { link = "SignColumn" },
-		Folded = { fg = palette.norm1, bg = palette.bg, bold = true },
+		Folded = { fg = palette.bg5, bg = palette.bg3, bold = true },
 		IncSearch = { link = "CurSearch" },
-		LineNr = { fg = palette.hidden },
-		MatchParen = { fg = palette.norm3, bold = true },
+		LineNr = { fg = palette.comment },
+		MatchParen = { fg = palette.fg5, bold = true },
 		ModeMsg = { fg = palette.norm1, bold = true },
 		MoreMsg = { fg = palette.norm1, bold = true },
 		MsgArea = { fg = palette.norm1, bg = palette.base1 },
@@ -351,10 +350,10 @@ local function generate_hlgroups(opts)
 		PmenuKindSel = { fg = palette.literal, bg = palette.base2, reverse = true, bold = true },
 		Question = { bold = true },
 		QuickFixLine = { link = "Visual" },
-		Search = { bg = palette.accent, fg = palette.base1 },
+		Search = { bg = palette.visual },
 		SignColumn = { bg = palette.bg, fg = palette.norm1, bold = true },
 		SpecialKey = { fg = palette.norm_subtle },
-		StatusLine = { fg = palette.norm1, bg = palette.cursor_line },
+		StatusLine = { fg = palette.fg3, bg = palette.cursor_line },
 		StatusLineNC = { fg = palette.norm1, bg = palette.oob, italic = true },
 		StatusLineTerm = { link = "StatusLine" },
 		StatusLineTermNC = { link = "StatusLineNC" },
@@ -404,10 +403,10 @@ local function generate_hlgroups(opts)
 		DiagnosticSignWarn = { link = "DiagnosticWarn" },
 		--}}}
 		-- git-related {{{
-		Added = { fg = palette.base1, bg = palette.add },
-		Changed = { fg = palette.base1, bg = palette.change },
-		Removed = { fg = palette.base1, bg = palette.delete },
-		Deleted = { fg = palette.base1, bg = palette.delete },
+		Added = { fg = palette.bg1, bg = palette.add },
+		Changed = { fg = palette.bg1, bg = palette.change },
+		Removed = { fg = palette.bg1, bg = palette.delete },
+		Deleted = { fg = palette.bg1, bg = palette.delete },
 
 		DiffAdd = { link = "Added" },
 		DiffChange = { link = "Changed" },
@@ -421,10 +420,6 @@ local function generate_hlgroups(opts)
 		GitAdd = { link = "Added" },
 		GitChange = { link = "Changed" },
 		GitDelete = { link = "Removed" },
-		--}}}
-		-- treesitter {{{
-		["@string.documentation"] = { link = "Comment" },
-		["@keyword.function.julia"] = { bold = true },
 		--}}}
 		-- quickscope.vim {{{
 		QuickScopeCursor = { link = "Cursor" },
@@ -448,15 +443,15 @@ local function generate_hlgroups(opts)
 		GitSignsDeleteLn = { link = "Removed" },
 		--}}}
 		-- telescope.nvim {{{
-		TelescopeSelection = { bg = palette.base1 },
+		TelescopeSelection = { bg = palette.bg3 },
 		TelescopeMatching = { fg = palette.fn },
-		TelescopePromptNormal = { fg = palette.normal, bg = palette.base3 },
-		TelescopePromptBorder = { fg = palette.normal, bg = palette.base3 },
-		TelescopeResultsNormal = { bg = palette.base2 },
-		TelescopeResultsBorder = { bg = palette.base2 },
-		TelescopeResultsTitle = { bg = palette.base2, fg = palette.base2 },
-		TelescopePromptTitle = { bg = palette.fn, fg = palette.base1 },
-		TelescopeSelectionCaret = { fg = palette.green },
+		TelescopePromptNormal = { fg = palette.normal, bg = palette.bg3 },
+		TelescopePromptBorder = { fg = palette.normal, bg = palette.bg3 },
+		TelescopeResultsNormal = { bg = palette.bg2 },
+		TelescopeResultsBorder = { bg = palette.bg2 },
+		TelescopeResultsTitle = { bg = palette.bg2, fg = palette.bg2 },
+		TelescopePromptTitle = { bg = palette.fn, fg = palette.dark },
+		TelescopeSelectionCaret = { fg = palette.fn },
 		--}}}
 		-- whichkey.nvim {{{
 		WhichKey = { link = "NormalFloat" },
@@ -483,7 +478,7 @@ local function generate_hlgroups(opts)
 		OilTrashSourcePath = { link = "Normal" },
 		--}}}
 		-- sidebar {{{
-		NormalSB = { fg = palette.norm1, bg = palette.oob },
+		NormalSB = { fg = palette.norm1, bg = palette.bg3 },
 		SignColumnSB = { fg = palette.norm1, bg = palette.oob },
 		WinSeparatorSB = { fg = palette.norm1, bg = palette.oob },
 		--}}}
@@ -502,39 +497,134 @@ local function generate_hlgroups(opts)
 		-- BUG: bug
 
 		-- Todo comment
-		TodoBgNOTE = { bg = palette.number, fg = palette.base1 },
+		TodoBgNOTE = { bg = palette.number, fg = palette.dark },
 		TodoFgNOTE = { fg = palette.number },
 
 		-- TODO  mer gul
-		TodoBgTODO = { bg = palette.warn, fg = palette.base1 },
+		TodoBgTODO = { bg = palette.warn, fg = palette.dark },
 		TodoFgTODO = { fg = palette.warn },
 
 		--treesitter stuff
-		["@punctuation.bracket"] = { fg = palette.base4 },
-		["@constructor"] = { fg = palette.norm3 },
-		["@keyword.function"] = { fg = palette.norm1 },
+		-- @variable                       various variable names
+		-- @variable.builtin               built-in variable names (e.g. this, self)
+		-- @variable.parameter             parameters of a function
+		-- @variable.parameter.builtin     special parameters (e.g. _, it)
+		-- @variable.member                object and struct fields
+		-- @constant               constant identifiers
+		-- @constant.builtin       built-in constant values
+		-- @constant.macro         constants defined by the preprocessor
+		-- @module                 modules or namespaces
+		-- @module.builtin         built-in modules or namespaces
+		-- @label                  GOTO and other labels (e.g. label: in C), including heredoc labels
+		-- @string                 string literals
+		-- @string.documentation   string documenting code (e.g. Python docstrings)
+		-- @string.regexp          regular expressions
+		-- @string.escape          escape sequences
+		-- @string.special         other special strings (e.g. dates)
+		-- @string.special.symbol  symbols or atoms
+		-- @string.special.path    filenames
+		-- @string.special.url     URIs (e.g. hyperlinks)
+		-- @character              character literals
+		-- @character.special      special characters (e.g. wildcards)
+		-- @boolean                boolean literals
+		-- @number                 numeric literals
+		-- @number.float           floating-point number literals
+		-- @type                   type or class definitions and annotations
+		-- @type.builtin           built-in types
+		-- @type.definition        identifiers in type definitions (e.g. typedef <type> <identifier> in C)
+		-- @attribute              attribute annotations (e.g. Python decorators, Rust lifetimes)
+		-- @attribute.builtin      builtin annotations (e.g. @property in Python)
+		-- @property               the key in key/value pairs
+		-- @function               function definitions
+		-- @function.builtin       built-in functions
+		-- @function.call          function calls
+		-- @function.macro         preprocessor macros
+		-- @function.method        method definitions
+		-- @function.method.call   method calls
+		-- @constructor            constructor calls and definitions
+		-- @operator               symbolic operators (e.g. +, *)
+		-- @keyword                keywords not fitting into specific categories
+		-- @keyword.coroutine      keywords related to coroutines (e.g. go in Go, async/await in Python)
+		-- @keyword.function       keywords that define a function (e.g. func in Go, def in Python)
+		-- @keyword.operator       operators that are English words (e.g. and, or)
+		-- @keyword.import         keywords for including or exporting modules (e.g. import, from in Python)
+		-- @keyword.type           keywords describing namespaces and composite types (e.g. struct, enum)
+		-- @keyword.modifier       keywords modifying other constructs (e.g. const, static, public)
+		-- @keyword.repeat         keywords related to loops (e.g. for, while)
+		-- @keyword.return         keywords like return and yield
+		-- @keyword.debug          keywords related to debugging
+		-- @keyword.exception      keywords related to exceptions (e.g. throw, catch)
+		-- @keyword.conditional         keywords related to conditionals (e.g. if, else)
+		-- @keyword.conditional.ternary ternary operator (e.g. ?, :)
+		-- @keyword.directive           various preprocessor directives and shebangs
+		-- @keyword.directive.define    preprocessor definition directives
+		-- @punctuation.delimiter  delimiters (e.g. ;, ., ,)
+		-- @punctuation.bracket    brackets (e.g. (), {}, [])
+		-- @punctuation.special    special symbols (e.g. {} in string interpolation)
+		-- @comment                line and block comments
+		-- @comment.documentation  comments documenting code
+		-- @comment.error          error-type comments (e.g. ERROR, FIXME, DEPRECATED)
+		-- @comment.warning        warning-type comments (e.g. WARNING, FIX, HACK)
+		-- @comment.todo           todo-type comments (e.g. TODO, WIP)
+		-- @comment.note           note-type comments (e.g. NOTE, INFO, XXX)
+		-- @markup.strong          bold text
+		-- @markup.italic          italic text
+		-- @markup.strikethrough   struck-through text
+		-- @markup.underline       underlined text (only for literal underline markup!)
+		-- @markup.heading         headings, titles (including markers)
+		-- @markup.heading.1       top-level heading
+		-- @markup.heading.2       section heading
+		-- @markup.heading.3       subsection heading
+		-- @markup.heading.4       and so on
+		-- @markup.heading.5       and so forth
+		-- @markup.heading.6       six levels ought to be enough for anybody
+		-- @markup.quote           block quotes
+		-- @markup.math            math environments (e.g. $ ... $ in LaTeX)
+		-- @markup.link            text references, footnotes, citations, etc.
+		-- @markup.link.label      link, reference descriptions
+		-- @markup.link.url        URL-style links
+		-- @markup.raw             literal or verbatim text (e.g. inline code)
+		-- @markup.raw.block       literal or verbatim text as a stand-alone block
+		-- @markup.list            list markers
+		-- @markup.list.checked    checked todo-style list markers
+		-- @markup.list.unchecked  unchecked todo-style list markers
+		-- @diff.plus              added text (for diff files)
+		-- @diff.minus             deleted text (for diff files)
+		-- @diff.delta             changed text (for diff files)
+		-- @tag                    XML-style tag names (e.g. in XML, HTML, etc.)
+		-- @tag.builtin            builtin tag names (e.g. HTML5 tags)
+		-- @tag.attribute          XML-style tag attributes
+		-- @tag.delimiter          XML-style tag delimiters
+
+		["@punctuation.bracket"] = { fg = palette.bg5 },
+		["@constructor"] = { fg = palette.fg3 },
+		["@keyword.function"] = { fg = palette.fg5 },
 		["@keyword.modifier"] = { fg = palette.mid },
-		["@variable"] = { fg = palette.norm4 },
+		["@variable"] = { fg = palette.fg2 },
+		["@keyword.conditional"] = { fg = palette.fg6 },
+		["@punctuation.delimiter"] = { fg = palette.mid },
+		["@type.builtin"] = { fg = palette.fg3 },
+		["@variable.builtin"] = { fg = palette.norm3, bold = true },
+		["@string.documentation"] = { link = "Comment" },
 
 		-- treesitter lua {{{
-		["@keyword.conditional"] = { link = "Operator" },
 		["@variable.member.lua"] = { link = "Identifier" },
 		["@constructor.lua"] = { fg = palette.base4 },
-		-- }}}
 
 		-- treesitter rust {{{
-		["@punctuation.delimiter"] = { fg = palette.mid },
-		["@type.builtin"] = { fg = palette.norm2 },
-		["@variable.builtin"] = { fg = palette.norm3, bold = true },
 		["@function.macro.rust"] = { fg = palette.norm2 },
-		["@keyword.rust"] = { fg = palette.fn },
-		["@keyword.type.rust"] = { fg = palette.fn },
-		-- }}}
+		["@keyword.rust"] = { fg = palette.keyword },
+		["@keyword.type.rust"] = { fg = palette.keyword },
 
 		-- lsp stuff
-		LspReferenceWrite = { fg = palette.fn, bold = true },
-		LspReferenceRead = { fg = palette.norm3, bold = true },
+		["@lsp.mod.static"] = { italic = true },
+		["@lsp.type.enum"] = { fg = palette.fg7 },
+		LspReferenceWrite = { bg = palette.fn, fg = palette.dark },
+		LspReferenceRead = { bg = palette.cursor_line },
 		LspReferenceText = { bold = true },
+
+		-- lsp rust
+		["@lsp.typemod.derive.defaultLibrary.rust"] = { fg = palette.fg4 },
 	}
 end
 -- Autocommands (source: https://github.com/folke/tokyonight.nvim/blob/f9e738e2dc78326166f11c021171b2e66a2ee426/lua/tokyonight/util.lua#L67)
@@ -564,6 +654,16 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("TermOpen", {
 	group = augroup,
 	callback = set_whl,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup,
+	pattern = { "cs" },
+	callback = function()
+		vim.print("cs file")
+		-- TODO: lower semantics prio when ft from config array
+		-- vim.highlight.priorities.semantic_tokens = 70
+	end,
 })
 
 -- Here's the function you want --
