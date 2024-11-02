@@ -18,9 +18,13 @@ local function is_dark()
 	end
 end
 
+---Clamps a value between 0 and max
+---@param x integer
+---@param max integer
+---@return integer
 local function clamp(x, max)
 	if x > max then
-		return 100
+		return max
 	elseif x < 0 then
 		return 0
 	else
