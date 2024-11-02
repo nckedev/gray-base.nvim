@@ -28,9 +28,9 @@ local function clamp(x, max)
 	end
 end
 
----@param h number hue
----@param s number sat
----@param l number lum
+---@param h integer hue
+---@param s integer sat
+---@param l integer lum
 ---@return string hex the hsl converted to hex
 local function hsl(h, s, l)
 	h = clamp(h, 360) / 360
@@ -233,6 +233,7 @@ local function generate_palette(opts)
 
 		cursor_line = colors.grays.bg2,
 		comment = colors.grays.bg4,
+		doc_comment = colors.grays.bg5,
 		oob = colors.grays.min,
 		cursor = colors.cursor.default,
 
@@ -343,11 +344,12 @@ local function generate_hlgroups(opts)
 		NonText = { fg = palette.mid },
 		NormalNC = { link = "Normal" },
 		NvimInternalError = { link = "ErrorMsg" },
-		Pmenu = { bg = palette.base3 },
-		PmenuSbar = { bg = palette.base2, reverse = true },
-		PmenuKind = { bg = palette.base2 },
-		PmenuSel = { fg = palette.norm1, bg = palette.base2, reverse = true, bold = false },
-		PmenuKindSel = { fg = palette.literal, bg = palette.base2, reverse = true, bold = true },
+		Pmenu = { bg = palette.bg3 },
+		PmenuSbar = { bg = palette.bg3, reverse = true },
+		PmenuKind = { bg = palette.bg3 },
+
+		PmenuSel = { fg = palette.fg3, bg = palette.bg3, reverse = true, bold = false },
+		PmenuKindSel = { fg = palette.literal, bg = palette.bg3, reverse = true, bold = true },
 		Question = { bold = true },
 		QuickFixLine = { link = "Visual" },
 		Search = { bg = palette.visual },
@@ -504,6 +506,12 @@ local function generate_hlgroups(opts)
 		TodoBgTODO = { bg = palette.warn, fg = palette.dark },
 		TodoFgTODO = { fg = palette.warn },
 
+		-- ctrlf
+		CtrlfHintChar = { link = "Removed" },
+		CtrlfMatch = { link = "Changed" },
+		CtrlfMatchClosest = { link = "Added" },
+		CtrlfDarken = { link = "Comment" },
+
 		--treesitter stuff
 		-- @variable                       various variable names
 		-- @variable.builtin               built-in variable names (e.g. this, self)
@@ -606,10 +614,16 @@ local function generate_hlgroups(opts)
 		["@type.builtin"] = { fg = palette.fg3 },
 		["@variable.builtin"] = { fg = palette.norm3, bold = true },
 		["@string.documentation"] = { link = "Comment" },
+		["@tag"] = { fg = palette.mid },
+		["@tag.attribute"] = { fg = palette.fg4 },
+		["@tag.delimiter"] = { fg = palette.bg5 },
+		["@comment.documentation"] = { fg = palette.doc_comment },
+
 
 		-- treesitter lua {{{
 		["@variable.member.lua"] = { link = "Identifier" },
 		["@constructor.lua"] = { fg = palette.base4 },
+		["@keyword.lua"] = { fg = palette.bg6 },
 
 		-- treesitter rust {{{
 		["@function.macro.rust"] = { fg = palette.norm2 },
@@ -619,6 +633,11 @@ local function generate_hlgroups(opts)
 		-- lsp stuff
 		["@lsp.mod.static"] = { italic = true },
 		["@lsp.type.enum"] = { fg = palette.fg7 },
+		-- make special case for lua if this interfers with other languages
+		["@lsp.type.type"] = { fg = palette.doc_comment },
+		["@lsp.type.comment"] = { fg = palette.doc_comment },
+		["@lsp.mod.documentation"] = { fg = palette.doc_comment },
+
 		LspReferenceWrite = { bg = palette.fn, fg = palette.dark },
 		LspReferenceRead = { bg = palette.cursor_line },
 		LspReferenceText = { bold = true },
@@ -627,6 +646,7 @@ local function generate_hlgroups(opts)
 		["@lsp.typemod.derive.defaultLibrary.rust"] = { fg = palette.fg4 },
 	}
 end
+
 -- Autocommands (source: https://github.com/folke/tokyonight.nvim/blob/f9e738e2dc78326166f11c021171b2e66a2ee426/lua/tokyonight/util.lua#L67)
 local augroup = vim.api.nvim_create_augroup("gray-base", { clear = true })
 vim.api.nvim_create_autocmd("ColorSchemePre", {
@@ -669,6 +689,11 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Here's the function you want --
 local M = {}
 
+---converts x to an hsl table if x is an integer
+---if x is an table, it will assert that hue is set
+---@param x integer | hslTable
+---@param opts table
+---@return hslTable
 local function convert_to_object(x, opts)
 	if type(x) == "number" then
 		return {
@@ -686,8 +711,11 @@ local function convert_to_object(x, opts)
 		end
 		return x
 	end
+	return {}
 end
 
+---loads the colorscheme and merges config
+---@param opts table
 M.load = function(opts)
 	-- override the base options with dark or light if there is any
 	if is_dark() == true and opts ~= nil then

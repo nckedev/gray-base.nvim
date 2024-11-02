@@ -85,7 +85,7 @@ local config = {
 		light = {
 			colors = {
 				primary = 232,
-				primary = 42,
+				secondary = 42,
 			},
 		},
 	},
@@ -95,7 +95,7 @@ local M = {}
 
 M.config = config
 
----@param args Config?
+---@param args table
 -- you can define your setup function here. Usually configurations can be merged, accepting outside params and
 -- you can also put some validation here for those.
 M.setup = function(args)

@@ -1,21 +1,23 @@
 -- local C = require("")
-print("lua line")
 local theme = {
 	normal = {
 		a = { bg = "#000000", fg = "#FFFFFF", bold = true },
-		-- b = { bg = C.night.c2, fg = C.fg },
-		-- c = { bg = C.night.c1, fg = C.fg },
+		b = { bg = "#000000", fg = "#FFFFFF" },
+		c = { bg = "#000000", fg = "#FFFFFF" },
+		x = { bg = "#000000", fg = "#FFFFFF" },
+		y = { bg = "#000000", fg = "#FFFFFF" },
+		z = { bg = "#000000", fg = "#FFFFFF" },
 		-- x = { bg = C.night.c1, fg = C.fg },
 		-- y = { bg = C.night.c2, fg = C.fg },
 		-- z = { bg = C.frost.turquoise, fg = C.bg, bold = true },
 	},
 	insert = {
-		a = { bg = "#FFFFFF" fg = C.bg, bold = true },
-	-- 	b = { bg = C.night.c2, fg = C.fg },
-	-- 	c = { bg = C.night.c1, fg = C.fg },
-	-- 	x = { bg = C.night.c1, fg = C.fg },
-	-- 	y = { bg = C.night.c2, fg = C.fg },
-	-- 	z = { bg = C.aurora.green, fg = C.bg, bold = true },
+		-- a = { bg = "#FFFFFF", fg = "#FFF000", bold = true },
+		-- 	b = { bg = C.night.c2, fg = C.fg },
+		-- 	c = { bg = C.night.c1, fg = C.fg },
+		-- 	x = { bg = C.night.c1, fg = C.fg },
+		-- 	y = { bg = C.night.c2, fg = C.fg },
+		-- 	z = { bg = C.aurora.green, fg = C.bg, bold = true },
 	},
 	-- visual = {
 	-- 	a = { bg = C.frost.sea, fg = C.bg, bold = true },
