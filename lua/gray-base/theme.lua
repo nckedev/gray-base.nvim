@@ -79,6 +79,12 @@ local function hsl(h, s, l)
 	return res
 end
 
+---Generate a gray (hexstring) value with a tint
+---if the the bg is set to "light" the gray values will be inverted
+---@param h integer
+---@param s integer
+---@param x integer
+---@return string
 local function gray(h, s, x)
 	--if lightmode, invert the gray colors
 	if is_dark() == false then
@@ -88,6 +94,10 @@ local function gray(h, s, x)
 	return hsl(h, s, x)
 end
 
+---Generate variants from a color
+---@param color HslColor
+---@param variance integer
+---@return HslColorWithVariance
 local function generate_variants(color, variance)
 	local h = color.hue
 	local s = color.saturation
@@ -102,6 +112,9 @@ local function generate_variants(color, variance)
 	}
 end
 
+---Rounds a number to a integer
+---@param x number
+---@return integer
 local function round(x)
 	if x >= 0.5 then
 		return math.ceil(x)
@@ -110,7 +123,6 @@ local function round(x)
 	end
 end
 
--- TODO: remove min max, and take fom opts
 local function generate_gray_scale(opts)
 	-- 5 base grays and 5 highlight grays and 3 mid grays
 	-- the step between base5 and mid1 should be twice the steps between each base step
@@ -158,6 +170,10 @@ local function generate_gray_scale(opts)
 	}
 end
 
+---Creates an table from a hue value
+---@param x integer
+---@param opts Options
+---@return table
 local function hsl_obj_from_hue(x, opts)
 	return {
 		hue = x,
@@ -166,6 +182,9 @@ local function hsl_obj_from_hue(x, opts)
 	}
 end
 
+---Generate colors
+---@param opts Options
+---@return table
 local function generate_colors(opts)
 	local colors = {
 		red = hsl_obj_from_hue(0, opts),
@@ -183,8 +202,6 @@ local function generate_colors(opts)
 
 	local grays = generate_gray_scale(opts)
 
-	local h = opts.tint.hue
-	local s = opts.tint.saturation
 	return {
 
 		grays = grays,
@@ -204,6 +221,9 @@ local function generate_colors(opts)
 	}
 end
 
+---Generates a palette
+---@param opts Options
+---@return table
 local function generate_palette(opts)
 	local colors = generate_colors(opts)
 
@@ -257,6 +277,9 @@ local function generate_palette(opts)
 	}
 end
 
+---Generates hl groups
+---@param opts Options
+---@return table
 local function generate_hlgroups(opts)
 	local palette = generate_palette(opts)
 	return {
@@ -511,10 +534,10 @@ local function generate_hlgroups(opts)
 		TodoFgTODO = { fg = palette.warn },
 
 		-- ctrlf
-		CtrlfHintChar = { link = "Removed" },
-		CtrlfMatch = { link = "Changed" },
-		CtrlfMatchClosest = { link = "Added" },
-		CtrlfDarken = { link = "Comment" },
+		-- CtrlfHintChar = { link = "Removed" },
+		-- CtrlfMatch = { link = "Changed" },
+		-- CtrlfMatchClosest = { link = "Added" },
+		-- CtrlfDarken = { link = "Comment" },
 
 		--treesitter stuff
 		-- @variable                       various variable names
@@ -690,14 +713,13 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Here's the function you want --
 local M = {}
 
 ---converts x to an hsl table if x is an integer
 ---if x is an table, it will assert that hue is set
----@param x integer | hslTable
+---@param x integer | HslColor
 ---@param opts table
----@return hslTable
+---@return HslColor
 local function convert_to_object(x, opts)
 	if type(x) == "number" then
 		return {
