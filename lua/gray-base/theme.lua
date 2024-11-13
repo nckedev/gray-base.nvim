@@ -250,7 +250,7 @@ local function generate_palette(opts)
 		accent_light = colors.primary.light,
 
 		fn = colors.primary.default,
-		keyword = colors.primary.light,
+		keyword = colors.primary.default,
 
 		dark = colors.grays.always_dark,
 		light = colors.grays.always_light,
@@ -634,7 +634,7 @@ local function generate_hlgroups(opts)
 		["@punctuation.bracket"] = { fg = palette.bg5 },
 		["@constructor"] = { fg = palette.fg3 },
 		["@keyword.function"] = { fg = palette.fg5 },
-		["@keyword.modifier"] = { fg = palette.mid },
+		["@keyword.modifier"] = { fg = palette.fg5 },
 		["@variable"] = { fg = palette.fg2 },
 		["@keyword.conditional"] = { fg = palette.fg6 },
 		["@punctuation.delimiter"] = { fg = palette.mid },
@@ -671,6 +671,7 @@ local function generate_hlgroups(opts)
 
 		-- lsp rust
 		["@lsp.typemod.derive.defaultLibrary.rust"] = { fg = palette.fg4 },
+		["@lsp.type.enum.rust"] = { link = "@lsp" },
 	}
 end
 
