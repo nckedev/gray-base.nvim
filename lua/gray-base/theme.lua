@@ -208,6 +208,7 @@ local function generate_colors(opts)
 
 		primary = generate_variants(opts.colors.primary, opts.lightness_variance),
 		secondary = generate_variants(opts.colors.secondary, opts.lightness_variance),
+		accent = generate_variants(opts.colors.accent, opts.lightness_variance),
 		strings = generate_variants(opts.colors.strings, opts.lightness_variance),
 		cursor = generate_variants(opts.colors.cursor, opts.lightness_variance),
 		purple = generate_variants(colors.purple, opts.lightness_variance),
@@ -246,7 +247,7 @@ local function generate_palette(opts)
 		fg2 = colors.grays.fg2,
 		fg1 = colors.grays.fg1,
 
-		accent = colors.primary.dark,
+		accent = colors.accent.default,
 		accent_light = colors.primary.light,
 
 		fn = colors.primary.default,
@@ -346,7 +347,7 @@ local function generate_hlgroups(opts)
 		-- ui {{{
 		ColorColumn = { link = "CursorLine" },
 		Conceal = { link = "Comment" },
-		CurSearch = { bg = palette.accent_light, fg = palette.dark },
+		CurSearch = { bg = palette.accent, fg = palette.dark },
 		Cursor = { fg = palette.dark, bg = palette.cursor },
 		CursorColumn = { link = "CursorLine" },
 		CursorLine = { bg = palette.cursor_line },
@@ -473,7 +474,7 @@ local function generate_hlgroups(opts)
 		--}}}
 		-- telescope.nvim {{{
 		TelescopeSelection = { bg = palette.bg3 },
-		TelescopeMatching = { fg = palette.fn },
+		TelescopeMatching = { fg = palette.error },
 		TelescopePromptNormal = { fg = palette.normal, bg = palette.bg3 },
 		TelescopePromptBorder = { fg = palette.normal, bg = palette.bg3 },
 		TelescopeResultsNormal = { bg = palette.bg2 },
@@ -482,6 +483,9 @@ local function generate_hlgroups(opts)
 		TelescopePromptTitle = { bg = palette.fn, fg = palette.dark },
 		TelescopeSelectionCaret = { fg = palette.fn },
 		--}}}
+		--FzfLua
+		FzfLuaFzfMatch = { fg = palette.error },
+		FzfLuaSearch = { fg = palette.error },
 		-- whichkey.nvim {{{
 		WhichKey = { link = "NormalFloat" },
 		WhichKeyDesc = { link = "WhichKey" },
@@ -534,10 +538,11 @@ local function generate_hlgroups(opts)
 		TodoFgTODO = { fg = palette.warn },
 
 		-- ctrlf
-		-- CtrlfHintChar = { link = "Removed" },
-		-- CtrlfMatch = { link = "Changed" },
-		-- CtrlfMatchClosest = { link = "Added" },
-		-- CtrlfDarken = { link = "Comment" },
+		CtrlfHintChar = { link = "Removed" },
+		CtrlfMatch = { link = "Changed" },
+		CtrlfMatchClosest = { link = "Added" },
+		CtrlfDarken = { link = "Comment" },
+		CtrlfSearchbox = { fg = palette.dark, bg = palette.number },
 
 		--treesitter stuff
 		-- @variable                       various variable names
@@ -636,6 +641,7 @@ local function generate_hlgroups(opts)
 		["@keyword.function"] = { fg = palette.fg5 },
 		["@keyword.modifier"] = { fg = palette.fg5 },
 		["@variable"] = { fg = palette.fg2 },
+		["@variable.member"] = { fg = palette.fg5 },
 		["@keyword.conditional"] = { fg = palette.fg6 },
 		["@punctuation.delimiter"] = { fg = palette.mid },
 		["@type.builtin"] = { fg = palette.fg3 },
@@ -648,9 +654,11 @@ local function generate_hlgroups(opts)
 
 
 		-- treesitter lua {{{
-		["@variable.member.lua"] = { link = "Identifier" },
 		["@constructor.lua"] = { fg = palette.base4 },
 		["@keyword.lua"] = { fg = palette.bg6 },
+
+		-- tressiter gleam
+		["@constructor.gleam"] = { link = "Constant" },
 
 		-- treesitter rust {{{
 		["@function.macro.rust"] = { fg = palette.norm2 },
@@ -753,6 +761,7 @@ M.load = function(opts)
 
 	opts.colors.primary = convert_to_object(opts.colors.primary, opts)
 	opts.colors.secondary = convert_to_object(opts.colors.secondary, opts)
+	opts.colors.accent = convert_to_object(opts.colors.accent, opts)
 	opts.colors.strings = convert_to_object(opts.colors.strings, opts)
 	opts.colors.cursor = convert_to_object(opts.colors.cursor, opts)
 

@@ -7,10 +7,12 @@ local config = {
 	colors = {
 		-- hue of the primary color, the color used for fuctions etc.
 		-- the value can be a number (hue) or an object {hue, saturation, lightness }
-		-- if the value is a nunber the saturation and lightness of the color object is used.
+		-- if the value is a number the saturation and lightness of the color object is used.
 		primary = 42,
-		secondary = 210,
 		-- hue of the secondary color, used for constants and numbers
+		secondary = 210,
+		-- hue of the accent color, used for matches in searches and places where you need a contrasting color to grab attention
+		accent = 300,
 		-- hue of strings, only works if use_colored_strings is set to true.
 		strings = { hue = 85, saturation = 0, lightness = 60 },
 		cursor = { hue = 85, saturation = 40, lightness = 50 },
