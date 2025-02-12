@@ -96,18 +96,21 @@ end
 
 ---Generate variants from a color
 ---@param color HslColor
----@param variance integer
+---@param opts Options
 ---@return HslColorWithVariance
-local function generate_variants(color, variance)
+local function generate_variants(color, opts)
 	local h = color.hue
 	local s = color.saturation
 	local l = color.lightness
 
+	if opts.inverted_lightness == true and is_dark() == false then
+		l = 100 - l
+	end
 	return {
 		monochrome = hsl(h, 0, l),
 		default = hsl(h, s, l),
-		dark = hsl(h, s, l - variance),
-		light = hsl(h, s, l + variance),
+		dark = hsl(h, s, l - opts.lightness_variance),
+		light = hsl(h, s, l + opts.lightness_variance),
 		strong = hsl(h, 100, 50),
 	}
 end
@@ -175,10 +178,16 @@ end
 ---@param opts Options
 ---@return table
 local function hsl_obj_from_hue(x, opts)
+	local lightness = opts.colors.lightness
+
+	if opts.inverted_lightness == true and is_dark() == false then
+		lightness = 100 - lightness
+	end
+
 	return {
 		hue = x,
 		saturation = opts.colors.saturation,
-		lightness = opts.colors.lightness,
+		lightness = lightness,
 	}
 end
 
@@ -206,16 +215,16 @@ local function generate_colors(opts)
 
 		grays = grays,
 
-		primary = generate_variants(opts.colors.primary, opts.lightness_variance),
-		secondary = generate_variants(opts.colors.secondary, opts.lightness_variance),
-		accent = generate_variants(opts.colors.accent, opts.lightness_variance),
-		strings = generate_variants(opts.colors.strings, opts.lightness_variance),
-		cursor = generate_variants(opts.colors.cursor, opts.lightness_variance),
-		purple = generate_variants(colors.purple, opts.lightness_variance),
-		red = generate_variants(colors.red, opts.lightness_variance),
-		green = generate_variants(colors.green, opts.lightness_variance),
-		orange = generate_variants(colors.orange, opts.lightness_variance),
-		yellow = generate_variants(colors.yellow, opts.lightness_variance),
+		primary = generate_variants(opts.colors.primary, opts),
+		secondary = generate_variants(opts.colors.secondary, opts),
+		accent = generate_variants(opts.colors.accent, opts),
+		strings = generate_variants(opts.colors.strings, opts),
+		cursor = generate_variants(opts.colors.cursor, opts),
+		purple = generate_variants(colors.purple, opts),
+		red = generate_variants(colors.red, opts),
+		green = generate_variants(colors.green, opts),
+		orange = generate_variants(colors.orange, opts),
+		yellow = generate_variants(colors.yellow, opts),
 
 		-- used as indicator of unused hlgroups or as a testing for finding hlgroups
 		hl_error = hsl(0, 100, 50),
@@ -474,7 +483,7 @@ local function generate_hlgroups(opts)
 		--}}}
 		-- telescope.nvim {{{
 		TelescopeSelection = { bg = palette.bg3 },
-		TelescopeMatching = { fg = palette.error },
+		TelescopeMatching = { fg = palette.accent },
 		TelescopePromptNormal = { fg = palette.normal, bg = palette.bg3 },
 		TelescopePromptBorder = { fg = palette.normal, bg = palette.bg3 },
 		TelescopeResultsNormal = { bg = palette.bg2 },

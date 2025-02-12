@@ -1,8 +1,8 @@
 local config = {
 	-- sets a tint color for all the gray values
 	tint = {
-		hue = 210,
-		saturation = 2,
+		hue = 42,
+		saturation = 1,
 	},
 	colors = {
 		-- hue of the primary color, the color used for fuctions etc.
@@ -28,6 +28,10 @@ local config = {
 		min = 15,
 		max = 85,
 	},
+
+	-- inverts the lightness in lightmode (darkmode is default) for better contrast
+	inverted_lightness = true,
+
 	-- override capture or highligt groups
 	-- accepts a hue value or a hex string
 	-- a hue value will respect the sarutation and luminance set in "colors"
@@ -112,11 +116,11 @@ M.presets = presets
 -- you can also put some validation here for those.
 M.setup = function(args)
 	-- default config
-	local config = M.config
+	local default_config = M.config
 
 	-- override with preset if set
 	if args.preset ~= nil and args.preset ~= "default" then
-		config = vim.tbl_deep_extend("force", config, M.presets[args.preset] or {})
+		config = vim.tbl_deep_extend("force", default_config, M.presets[args.preset] or {})
 	end
 
 	-- override with user config if set

@@ -21,6 +21,7 @@
 ---@field tint Tint
 ---@field colors { primary : HslColor, secondary : HslColor , accent: HslColor, strings : HslColor , cursor : HslColor , saturation : integer, lightness: integer}
 ---@field grays {min: integer, max : integer}
+---@field inverted_lightness boolean
 ---@field hl_overrides table<string, integer | string>
 ---@field lightness_variance  integer
 ---@field disable_lsp_semantic_hl  table<string>
