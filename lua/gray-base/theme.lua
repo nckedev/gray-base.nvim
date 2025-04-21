@@ -553,6 +553,15 @@ local function generate_hlgroups(opts)
 		CtrlfDarken = { link = "Comment" },
 		CtrlfSearchbox = { fg = palette.dark, bg = palette.number },
 
+		-- snacks
+		SnacksPickerBorder = { bg = palette.bg2, fg = palette.bg2 },
+		SnacksPicker = { bg = palette.bg1 },
+
+		SnacksPickerInput = { bg = palette.bg2 },
+
+		SnacksPickerMatch = { fg = palette.accent },
+		SnacksPickerSelected = { fg = palette.accent },
+
 		--treesitter stuff
 		-- @variable                       various variable names
 		-- @variable.builtin               built-in variable names (e.g. this, self)
