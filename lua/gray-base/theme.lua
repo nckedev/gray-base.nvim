@@ -682,6 +682,7 @@ local function generate_hlgroups(opts)
 		["@function.macro.rust"] = { fg = palette.norm2 },
 		["@keyword.rust"] = { fg = palette.keyword },
 		["@keyword.type.rust"] = { fg = palette.keyword },
+		["@label.rust"] = { fg = palette.number },
 
 		-- lsp stuff
 		["@lsp.mod.static"] = { italic = true },
@@ -696,8 +697,13 @@ local function generate_hlgroups(opts)
 		LspReferenceText = { bold = true },
 
 		-- lsp rust
-		["@lsp.typemod.derive.defaultLibrary.rust"] = { fg = palette.fg4 },
+		["@lsp.typemod.derive.defaultLibrary.rust"] = { fg = palette.fg7 },
+		["@lsp.typemod.generic.attribute.rust"] = { fg = palette.fg7 },
+		["@lsp.typemod.builtinAttribute.attribute.rust"] = { fg = palette.bg6 },
 		["@lsp.type.enum.rust"] = { link = "@lsp" },
+		["@lsp.type.decorator.rust"] = { fg = palette.bg6 },
+		["@lsp.type.derive.rust"] = { fg = palette.bg7 },
+		["@lsp.type.attributeBracket.rust"] = { fg = palette.bg7 },
 	}
 end
 
