@@ -279,6 +279,10 @@ local function generate_palette(opts)
 		change = colors.yellow.default,
 		delete = colors.red.default,
 
+		add_tint = hsl(85, 15, opts.grays.min + 5),
+		context_tint = colors.grays.bg1,
+		delete_tint = hsl(0, 15, opts.grays.min + 5),
+
 		error = colors.red.default,
 		warn = colors.yellow.default,
 		hint = colors.grays.fg4,
@@ -561,6 +565,13 @@ local function generate_hlgroups(opts)
 
 		SnacksPickerMatch = { fg = palette.accent },
 		SnacksPickerSelected = { fg = palette.accent },
+		SnacksDiffAdd = { bg = palette.add_tint },
+		SnacksDiffContext = { bg = palette.context_tint },
+		SnacksDiffDelete = { bg = palette.delete_tint },
+		SnacksDiffAddLineNr = { bg = palette.add_tint, fg = palette.comment },
+		SnacksDiffContextLineNr = { bg = palette.context_tint, fg = palette.comment },
+		SnacksDiffDeleteLineNr = { bg = palette.delete_tint, fg = palette.comment },
+
 
 		--treesitter stuff
 		-- @variable                       various variable names
