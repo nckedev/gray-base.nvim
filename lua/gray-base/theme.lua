@@ -107,7 +107,7 @@ local function generate_variants(color, opts)
 		l = 100 - l
 	end
 	return {
-		monochrome = hsl(opts.tint.hue, opts.tint.saturation, l - 10),
+		monochrome = hsl(opts.tint.hue, opts.tint.saturation, l - 5),
 		default = hsl(h, s, l),
 		dark = hsl(h, s, l - opts.lightness_variance),
 		light = hsl(h, s, l + opts.lightness_variance),
