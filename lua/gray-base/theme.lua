@@ -266,7 +266,7 @@ local function generate_palette(opts)
 		light = colors.grays.always_light,
 
 		cursor_line = colors.grays.bg2,
-		comment = colors.grays.bg4,
+		comment = colors.grays.bg5,
 		doc_comment = colors.grays.bg5,
 		oob = colors.grays.min,
 		cursor = colors.cursor.default,
@@ -785,7 +785,7 @@ local function convert_to_object(x, opts)
 end
 
 ---loads the colorscheme and merges config
----@param opts table
+---@param opts Options
 M.load = function(opts)
 	-- override the base options with dark or light if there is any
 	if is_dark() == true and opts ~= nil then
@@ -796,8 +796,14 @@ M.load = function(opts)
 
 	opts.colors.primary = convert_to_object(opts.colors.primary, opts)
 	opts.colors.secondary = convert_to_object(opts.colors.secondary, opts)
+	if opts.monochrome_secondary then opts.colors.secondary.saturation = 0 end
 	opts.colors.accent = convert_to_object(opts.colors.accent, opts)
+	-- override the saturation for accent if the opts has saturated accent set to true
+	if opts.saturated_accent then
+		opts.colors.accent.saturation = clamp(opts.colors.saturation + 20, 100)
+	end
 	opts.colors.strings = convert_to_object(opts.colors.strings, opts)
+	if opts.monochrome_strings then opts.colors.strings.saturation = 0 end
 	opts.colors.cursor = convert_to_object(opts.colors.cursor, opts)
 
 	local hlgroups = generate_hlgroups(opts)

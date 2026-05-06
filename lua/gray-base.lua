@@ -1,3 +1,4 @@
+--@type Options
 local config = {
 	-- sets a tint color for all the gray values
 	tint = {
@@ -8,11 +9,11 @@ local config = {
 		-- hue of the primary color, the color used for fuctions etc.
 		-- the value can be a number (hue) or an object {hue, saturation, lightness }
 		-- if the value is a number the saturation and lightness of the color object is used.
-		primary = 42,
+		primary = 37,
 		-- hue of the secondary color, used for constants and numbers
-		secondary = 210,
+		secondary = 200,
 		-- hue of the accent color, used for matches in searches and places where you need a contrasting color to grab attention
-		accent = 300,
+		accent = 10,
 		-- hue of strings, only works if use_colored_strings is set to true.
 		strings = { hue = 85, saturation = 0, lightness = 60 },
 		cursor = { hue = 85, saturation = 40, lightness = 50 },
@@ -28,9 +29,11 @@ local config = {
 		min = 15,
 		max = 85,
 	},
-
 	-- inverts the lightness in lightmode (darkmode is default) for better contrast
 	inverted_lightness = true,
+	saturated_accent = true,
+	monochrome_strings = true,
+	monochrome_secondary = false,
 
 	-- override capture or highligt groups
 	-- accepts a hue value or a hex string
