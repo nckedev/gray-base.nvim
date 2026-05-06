@@ -1,9 +1,9 @@
---@type Options
+---@type Options
 local config = {
 	-- sets a tint color for all the gray values
 	tint = {
-		hue = 42,
-		saturation = 1,
+		hue = 37,
+		saturation = 7,
 	},
 	colors = {
 		-- hue of the primary color, the color used for fuctions etc.
@@ -11,11 +11,11 @@ local config = {
 		-- if the value is a number the saturation and lightness of the color object is used.
 		primary = 37,
 		-- hue of the secondary color, used for constants and numbers
-		secondary = 200,
+		secondary = 210,
 		-- hue of the accent color, used for matches in searches and places where you need a contrasting color to grab attention
 		accent = 10,
 		-- hue of strings, only works if use_colored_strings is set to true.
-		strings = { hue = 85, saturation = 0, lightness = 60 },
+		strings = 85,
 		cursor = { hue = 85, saturation = 40, lightness = 50 },
 		-- staturation of every color
 		saturation = 30,
@@ -62,12 +62,7 @@ local config = {
 	dark = {},
 	-- overrides for lightmode, all the base options except preset can be overridden
 	-- a value overriden in light will always have precidence over the base when bg="light"
-	light = {
-		secondary = {
-			hue = 210,
-			lightness = 50,
-		},
-	},
+	light = {},
 }
 
 local presets = {
