@@ -3,7 +3,7 @@ local config = {
 	-- sets a tint color for all the gray values
 	tint = {
 		hue = 37,
-		saturation = 7,
+		saturation = 4,
 	},
 	colors = {
 		-- hue of the primary color, the color used for fuctions etc.
